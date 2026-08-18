@@ -32,8 +32,9 @@ use the local-development `compose.yaml` in Coolify.
    `SERVICE_PASSWORD_64_MONGO`, and `SERVICE_HEX_64_HSDECKSTASH` from the
    Compose file. Do not replace them with committed values.
 
-4. Assign `https://decks.example.com:80` to the **frontend** service only.
-   Do not assign a domain or host port to `backend` or `mongo`.
+4. Assign `https://decks.example.com` to the **frontend** service only. The
+   frontend listens on container port `80`; do not add `:80` to the domain
+   field. Do not assign a domain or host port to `backend` or `mongo`.
 5. Deploy. Startup applies outstanding migrations and downloads the card cache
    only when it is absent or outdated. The first deployment can therefore take
    a little longer.

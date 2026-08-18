@@ -32,6 +32,8 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:?Set this to https://your-domain.example in Coolify}
       SESSION_SECRET: ${SERVICE_HEX_64_HSDECKSTASH}
       APP_ENV: production
+    expose:
+      - "8001"
     depends_on:
       mongo:
         condition: service_healthy
@@ -42,6 +44,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.production
     restart: unless-stopped
+    expose:
+      - "80"
     depends_on:
       - backend
 
