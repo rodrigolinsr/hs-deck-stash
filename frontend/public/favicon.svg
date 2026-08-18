@@ -1,0 +1,22 @@
+<!-- HSDeckStash favicon. Layer paths adapted from Lucide's ISC-licensed Layers icon. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#153968"/>
+      <stop offset="1" stop-color="#07162d"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="16" y1="12" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffe29a"/>
+      <stop offset=".45" stop-color="#e5a82d"/>
+      <stop offset="1" stop-color="#a55a0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <circle cx="32" cy="30" r="23" fill="none" stroke="#4cc9ff" stroke-opacity=".28" stroke-width="2"/>
+  <g fill="none" stroke="url(#gold)" stroke-linecap="round" stroke-linejoin="round" stroke-width="5">
+    <path d="M34.1 14.2a4.2 4.2 0 0 0-3.5 0L12.5 22.4a2.1 2.1 0 0 0 0 3.8l18.1 8.3a4.2 4.2 0 0 0 3.5 0l18.1-8.2a2.1 2.1 0 0 0 0-3.8z"/>
+    <path d="M11.2 35.2a2.1 2.1 0 0 0 1.2 1.9l18.2 8.3a4.2 4.2 0 0 0 3.5 0l18.1-8.2a2.1 2.1 0 0 0 1.2-1.9"/>
+    <path d="M11.2 45.8a2.1 2.1 0 0 0 1.2 1.9L30.6 56a4.2 4.2 0 0 0 3.5 0l18.1-8.2a2.1 2.1 0 0 0 1.2-1.9"/>
+  </g>
+  <circle cx="32" cy="24.3" r="4.4" fill="#58d5ff"/>
+</svg>

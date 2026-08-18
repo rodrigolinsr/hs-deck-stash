@@ -1,0 +1,49 @@
+# Production-only stack for Coolify. Keep compose.yaml for local development.
+# In Coolify, select this file as the Docker Compose definition and expose only
+# the `frontend` service on port 80.
+services:
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${SERVICE_USER_MONGO}
+      MONGO_INITDB_ROOT_PASSWORD: ${SERVICE_PASSWORD_64_MONGO}
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --username \"$$MONGO_INITDB_ROOT_USERNAME\" --password \"$$MONGO_INITDB_ROOT_PASSWORD\" --authenticationDatabase admin --eval 'db.runCommand({ ping: 1 }).ok' | grep 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  backend:
+    image: hsdeckstash-production-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    restart: unless-stopped
+    command: >
+      sh -c "python -m production_init &&
+      uvicorn server:app --host 0.0.0.0 --port 8001 --proxy-headers --forwarded-allow-ips='*'"
+    environment:
+      MONGO_URL: mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongo:27017/?authSource=admin
+      DB_NAME: ${DB_NAME:-hsdeckstash}
+      CORS_ORIGINS: ${CORS_ORIGINS:?Set this to https://your-domain.example in Coolify}
+      SESSION_SECRET: ${SERVICE_HEX_64_HSDECKSTASH}
+      APP_ENV: production
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  frontend:
+    image: hsdeckstash-production-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.production
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:

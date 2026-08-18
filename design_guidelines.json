@@ -1,0 +1,167 @@
+{
+  "theme": "dark",
+  "archetype": "LUXURY_GAMING_TAVERN",
+  "colors": {
+    "surfaces": [
+      {
+        "name": "page",
+        "kind": "solid",
+        "bg": "#0D0E12",
+        "on_bg": "#F3F4F6",
+        "on_bg_muted": "#9CA3AF",
+        "roles": {
+          "link": "#F59E0B",
+          "error": "#EF4444",
+          "success": "#10B981",
+          "warning": "#F59E0B"
+        }
+      },
+      {
+        "name": "panel",
+        "kind": "solid",
+        "bg": "#151821",
+        "on_bg": "#F9FAFB",
+        "on_bg_muted": "#94A3B8",
+        "roles": {
+          "border": "#282E3E",
+          "hover_bg": "#1E2230"
+        }
+      },
+      {
+        "name": "card_tile",
+        "kind": "solid",
+        "bg": "#1C202C",
+        "on_bg": "#FFFFFF",
+        "on_bg_muted": "#CBD5E1",
+        "roles": {
+          "mana_gem": "#3B82F6",
+          "rarity_legendary": "#F59E0B",
+          "rarity_epic": "#A855F7",
+          "rarity_rare": "#3B82F6",
+          "rarity_common": "#94A3B8"
+        }
+      },
+      {
+        "name": "class_pill",
+        "kind": "solid",
+        "bg": "#1A1D27",
+        "on_bg": "#F3F4F6",
+        "on_bg_muted": "#9CA3AF"
+      },
+      {
+        "name": "hero_banner",
+        "kind": "image",
+        "contrast_against": "#10131B",
+        "guarantee": "scrim: linear-gradient(to right, rgba(13,14,18,0.95) 0%, rgba(13,14,18,0.75) 50%, rgba(13,14,18,0.92) 100%)",
+        "on_bg": "#FFFFFF",
+        "on_bg_muted": "#D1D5DB",
+        "roles": {
+          "highlight": "#FBBF24"
+        }
+      },
+      {
+        "name": "modal_overlay",
+        "kind": "glass",
+        "contrast_against": "#12151E",
+        "guarantee": "backdrop-blur-xl bg-black/75 border border-amber-500/20",
+        "on_bg": "#FFFFFF",
+        "on_bg_muted": "#9CA3AF"
+      }
+    ],
+    "accent": "#D97706",
+    "on_accent": "#000000",
+    "classes": {
+      "DEATHKNIGHT": { "name": "Death Knight", "color": "#C41E3A", "bg": "#2A1015", "border": "#7F1D1D" },
+      "DEMONHUNTER": { "name": "Demon Hunter", "color": "#15803D", "bg": "#0D2316", "border": "#166534" },
+      "DRUID": { "name": "Druid", "color": "#FF7C0A", "bg": "#2E1B09", "border": "#9A3412" },
+      "HUNTER": { "name": "Hunter", "color": "#AAD372", "bg": "#1D2811", "border": "#4D7C0F" },
+      "MAGE": { "name": "Mage", "color": "#3FC7EB", "bg": "#0E242E", "border": "#0284C7" },
+      "PALADIN": { "name": "Paladin", "color": "#F48CBA", "bg": "#2B1421", "border": "#BE185D" },
+      "PRIEST": { "name": "Priest", "color": "#FFFFFF", "bg": "#242733", "border": "#64748B" },
+      "ROGUE": { "name": "Rogue", "color": "#FFF468", "bg": "#2B280E", "border": "#CA8A04" },
+      "SHAMAN": { "name": "Shaman", "color": "#0070DE", "bg": "#0C1F38", "border": "#1D4ED8" },
+      "WARLOCK": { "name": "Warlock", "color": "#8788EE", "bg": "#1C1C36", "border": "#6366F1" },
+      "WARRIOR": { "name": "Warrior", "color": "#C69B6D", "bg": "#291E16", "border": "#B45309" }
+    }
+  },
+  "typography": {
+    "font_family_heading": "Outfit, sans-serif",
+    "font_family_body": "Plus Jakarta Sans, sans-serif",
+    "font_family_mono": "JetBrains Mono, monospace",
+    "font_import": "@import \"@fontsource-variable/outfit\";\n@import \"@fontsource-variable/plus-jakarta-sans\";\n@import \"@fontsource-variable/jetbrains-mono\";",
+    "scale_px": {
+      "display": 52,
+      "h1": 40,
+      "h2": 32,
+      "h3": 22,
+      "body": 16,
+      "caption": 14
+    }
+  },
+  "entry_surfaces": {
+    "/": "tavern vault hero with amber rune glow, quick import card code trigger, and class-tabbed deck collection grid",
+    "/login": "branded split auth with hearthstone tavern atmospheric art panel left and clean email/password login card right",
+    "/register": "branded split auth with arcane vault positioning panel left and new account creation form right"
+  },
+  "grids": {
+    "deck_catalog": "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6",
+    "deck_detail_layout": "grid grid-cols-1 lg:grid-cols-12 gap-8 items-start",
+    "deck_detail_left_sidebar": "lg:col-span-4 space-y-6",
+    "deck_detail_right_cards": "lg:col-span-8 space-y-6",
+    "mana_curve_bar_grid": "grid grid-cols-8 gap-2 items-end h-32 pt-4"
+  },
+  "motion": {
+    "card_hover": "transition-transform duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(217,119,6,0.15)]",
+    "button_press": "active:scale-[0.98] transition-all duration-150",
+    "modal_backdrop": "transition-opacity duration-300 ease-out",
+    "tab_indicator": "transition-all duration-200 ease-in-out"
+  },
+  "accessibility": {
+    "data_testid_rule": "Every interactive button, input, tab, deck card, copy button, and modal must have a unique data-testid in kebab-case",
+    "contrast_check": "All text tokens exceed 4.5:1 against dark slate/obsidian surface colors",
+    "aria_labels": "All icon-only buttons (copy code, delete, edit, filter reset) must supply aria-label matching purpose"
+  },
+  "image_urls": [
+    {
+      "category": "auth_and_hero_atmosphere",
+      "url": "https://images.unsplash.com/photo-1508925831690-f33f79533e7c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwxfHxmYW50YXN5JTIwY2FyZCUyMGdhbWUlMjB0YXZlcm4lMjBhZXN0aGV0aWN8ZW58MHx8fHwxNzg2OTMyOTkwfDA&ixlib=rb-4.1.0&q=85",
+      "description": "Dim tavern ambient warm fantasy atmosphere for auth side panel and hero background banner"
+    },
+    {
+      "category": "card_table_texture",
+      "url": "https://images.unsplash.com/photo-1641380184601-06e153dec2fc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxnbG93aW5nJTIwbWFnaWMlMjBydW5lJTIwc2xhdGV8ZW58MHx8fHwxNzg2OTMyOTkwfDA&ixlib=rb-4.1.0&q=85",
+      "description": "Glowing mystical runes texture on dark stone for empty state illustrations and modal headers"
+    }
+  ],
+  "card_art_api_reference": {
+    "card_render_512": "https://art.hearthstonejson.com/v1/render/latest/enUS/512x/{CARD_ID}.png",
+    "card_tile_256": "https://art.hearthstonejson.com/v1/tiles/{CARD_ID}.png",
+    "card_data_source": "https://api.hearthstonejson.com/v1/latest/enUS/cards.collectible.json"
+  },
+  "component_paths": {
+    "app_shell": "/app/frontend/src/App.tsx",
+    "css_theme": "/app/frontend/src/index.css",
+    "deck_card": "/app/frontend/src/components/deck/DeckCard.tsx",
+    "deck_import_dialog": "/app/frontend/src/components/deck/DeckImportDialog.tsx",
+    "deck_tile_row": "/app/frontend/src/components/deck/DeckTileRow.tsx",
+    "mana_curve_chart": "/app/frontend/src/components/deck/ManaCurveChart.tsx",
+    "class_filter_bar": "/app/frontend/src/components/deck/ClassFilterBar.tsx",
+    "card_preview_popover": "/app/frontend/src/components/deck/CardPreviewPopover.tsx"
+  },
+  "instructions_to_main_agent": [
+    "1. BACKEND DECKSTRING DECODER & HEARTHSTONE METADATA: Use Python library `hearthstone` (pip install hearthstone in backend) or implement pure python Base64 Varint decoder. Cache `cards.collectible.json` from HearthstoneJSON locally or in memory so DBF IDs map instantly to Card ID, Name, Mana Cost, Rarity, Type, Class, and Card Text.",
+    "2. DECK IMPORT WORKFLOW: Allow pasting deck strings (e.g. AAECAfHhBAyV5ATDgweRqwfSrgeosQfQvwfqyQf2yQeb1Ae/3wey4wf85wcJodQEh/YEgf0GloIHl4IHvJQHupUHmsUH0MUHAAA=) with auto-detection of format (Standard/Wild), Hero Class, Mana Curve, Dust Cost, and 30 card list. Warn when duplicate deck string is imported with option to overwrite or save as alternate version.",
+    "3. CLASS THEMING & ICONS: Apply distinctive Blizzard class accent colors (Death Knight #C41E3A, Demon Hunter #15803D, Druid #FF7C0A, Hunter #AAD372, Mage #3FC7EB, Paladin #F48CBA, Priest #FFFFFF, Rogue #FFF468, Shaman #0070DE, Warlock #8788EE, Warrior #C69B6D) with glowing border highlights on deck cards and class filter pills.",
+    "4. INTERACTIVE CARD LIST & ART TILES: In deck details, display full 30-card list sorted by mana cost ascending. Show Hearthstone card tiles (`https://art.hearthstonejson.com/v1/tiles/{CARD_ID}.png`) with mana gem badge and quantity count (1 or 2, yellow star for legendary). Hovering or clicking on a card row displays the high-res 512px card render via Popover or HoverCard.",
+    "5. ONE-CLICK COPY TO CLIPBOARD: Prominent 'Copy Deck Code' button on both Deck Cards and Deck Details with animated copied checkmark feedback using sonner toast notification.",
+    "6. TAGS, NOTES, ARCHETYPES & FORMATS: Allow users to edit custom notes (mulligan guide, tech choices), add tags ('Aggro', 'Control', 'Combo', 'Tier 1', 'Legend Climb'), and switch format filter.",
+    "7. AUTH & SESSIONS: Standard HttpOnly cookie session via FastAPI with login, signup, and demo guest quick-start, seeding 4-5 sample top meta decks (e.g. Rainbow Death Knight, Insanity Warlock, Zarimi Priest, Reno Warrior, Pirate Demon Hunter) with full decoded card data.",
+    "8. RESPONSIVE DESIGN & TEST IDS: Ensure mobile layout collapses deck list smoothly. Add data-testid to every button, filter pill, search input, card tile row, and copy button."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": {
+    "spacing": "Generous padding (p-6, p-8) around all panels with crisp 1px borders (border-[#282E3E]).",
+    "contrast": "Gold/Amber (#F59E0B) highlights against dark obsidian (#0D0E12) and navy-charcoal (#151821) card surfaces.",
+    "typography": "Outfit for strong modern titles, Plus Jakarta Sans for clean readable UI text, JetBrains Mono for deckstrings and mana numbers.",
+    "toasts": "Mount <Toaster richColors position='top-right' /> once and trigger sonner toast on deck copy, save, edit, and delete actions."
+  }
+}

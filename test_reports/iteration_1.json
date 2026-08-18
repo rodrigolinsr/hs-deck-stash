@@ -1,0 +1,100 @@
+{
+  "iteration": 1,
+  "summary": "All 8 acceptance criteria exercised: 6 backend tests (pytest, all passed) + 7 browser checks (all passed). No bugs found.",
+  "passed": 13,
+  "failed": 0,
+  "checks": [
+    {
+      "criterion": "Login with the demo account works and the session survives navigation",
+      "name": "test_tscheck_login_session.py::test_login_sets_session_and_me_decks_work",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "POST /api/auth/login 200, ds_session cookie set; GET /api/auth/me 200 {email: demo@deckstash.app}; GET /api/decks 200 includes 'My First Import'"
+    },
+    {
+      "criterion": "Login with the demo account works and the session survives navigation",
+      "name": "login-session-survives-navigation",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Logged in via /login form, landed on '/', 'Welcome, demo@deckstash.app' visible; full page reload of '/' still shows header email + 'My First Import' deck; GET /api/decks returned 200 on reload"
+    },
+    {
+      "criterion": "Session cookie attributes are correct for the https preview",
+      "name": "test_tscheck_cookie_attributes.py::test_localhost_cookie_is_samesite_lax + test_https_preview_cookie_is_samesite_none_secure_partitioned",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "http://localhost:8001 login Set-Cookie: ds_session=...; SameSite=Lax. https://deck-stash.preview.emergentagent.com login Set-Cookie: ds_session=...; SameSite=None; Secure; Partitioned; HttpOnly"
+    },
+    {
+      "criterion": "Signing up a brand-new account also yields a working session",
+      "name": "signup-new-account-empty-state",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Toggled to 'Create one', signed up with tscheck-<ts>@deckstash.app / tavern123, redirected to '/', header shows new email, empty state 'No decks stashed yet' rendered, no 401 surfaced on /api/decks"
+    },
+    {
+      "criterion": "Importing a deck code decodes it",
+      "name": "import-deck-code-decodes-and-saves",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Pasted seeded deck code into import dialog; decode summary showed Death Knight / Standard / 30 cards / 13440 dust; saved with unique tscheck-import-<ts> name, new card appeared in deck grid"
+    },
+    {
+      "criterion": "Importing a deck code decodes it (preview API)",
+      "name": "test_tscheck_duplicate_deck_code.py::test_preview_decodes_new_code",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "POST /api/decks/preview 200 {hero_class_name: 'Death Knight', format: 'Standard', card_count: 30, dust_cost: 13440}"
+    },
+    {
+      "criterion": "Deck detail shows the decoded 30-card list",
+      "name": "deck-detail-shows-decoded-cards",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Opened newly saved tscheck-detail-<ts> deck; detail page shows Cards=30, Dust=13440, and exactly 21 unique card rows (data-testid^=card-row-)"
+    },
+    {
+      "criterion": "Copy / edit / delete work",
+      "name": "deck-copy-edit-delete",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Copy code showed 'Copied' toast; Edit dialog renamed deck to tscheck-cud-<ts>-renamed with 'Deck updated' toast and name updated in header; Delete (single action, no extra confirm modal) removed the deck from the grid, link no longer visible"
+    },
+    {
+      "criterion": "Duplicate deck code detection",
+      "name": "import-dialog-duplicate-warning",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Pasting the seeded code (already saved as 'My First Import') into a fresh import dialog shows duplicate warning text naming 'My First Import'"
+    },
+    {
+      "criterion": "Duplicate deck code detection (preview API)",
+      "name": "test_tscheck_duplicate_deck_code.py::test_preview_flags_duplicate_of_existing_deck",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "POST /api/decks/preview 200 {duplicate_of_id: <uuid>, duplicate_of_name: 'My First Import'}"
+    },
+    {
+      "criterion": "Class filter + search narrow the grid",
+      "name": "class-filter-and-search-narrow-grid",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Death Knight pill kept 'My First Import' visible; search 'My First Import' matched; search 'zzznomatchdeckname' rendered 'Nothing matches that filter' empty state"
+    },
+    {
+      "criterion": "Login with the demo account works (auth negative case)",
+      "name": "test_tscheck_login_session.py::test_login_wrong_password_rejected",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "POST /api/auth/login with wrong password returns 400/401 (rejected)"
+    }
+  ],
+  "bugs": [],
+  "action_items": [],
+  "notes": [
+    "A single 401 console error on GET /api/auth/me appeared in every browser check per spec_deviations — this is the intentional pre-login session probe, not a bug.",
+    "Deck delete in the UI executes immediately from the grid's trash icon without a separate confirmation dialog; treated as expected behavior per observed app design, not a defect.",
+    "Card art host (art.hearthstonejson.com) reachability was not separately verified; per spec_deviations, blocked art loading in this sandbox would not constitute a bug."
+  ],
+  "retest_needed": false
+}
