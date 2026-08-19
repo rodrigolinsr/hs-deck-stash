@@ -115,9 +115,23 @@ compose.coolify.yaml      Production-only Coolify stack
 COOLIFY_DEPLOYMENT.md     Coolify setup and operating instructions
 ```
 
+## Container images
+
+The production images are published to GitHub Container Registry when a commit
+lands on `main` and when a `v*` tag is pushed:
+
+- `ghcr.io/rodrigolinsr/hs-deck-stash-backend`
+- `ghcr.io/rodrigolinsr/hs-deck-stash-frontend`
+
+They receive `latest` on `main`, a branch or release-tag image tag, and a
+commit-specific `sha-...` tag. After the first publish, set each package's
+visibility to **Public** in its GitHub package settings so hosts can pull them
+without credentials. Set `BACKEND_IMAGE` and `FRONTEND_IMAGE` to pin a
+deployment to a release or commit tag.
+
 ## Deploy with Coolify
 
-Use [`compose.coolify.yaml`](compose.coolify.yaml), not the local `compose.yaml`. It serves the React application through Nginx on container port `80`, keeps FastAPI and MongoDB private, applies migrations at startup, and initially downloads the card cache when needed. In Coolify, assign the domain to `frontend` as `https://decks.example.com`—without `:80`.
+Use [`compose.coolify.yaml`](compose.coolify.yaml), not the local `compose.yaml`. It pulls the published GHCR images, serves the React application through Nginx on container port `80`, keeps FastAPI and MongoDB private, applies migrations at startup, and initially downloads the card cache when needed. In Coolify, assign the domain to `frontend` as `https://decks.example.com`—without `:80`.
 
 The deployment guide covers the required domain, CORS configuration, generated secrets, verification, backups, and card-cache refreshes:
 
@@ -133,4 +147,5 @@ The deployment guide covers the required domain, CORS configuration, generated s
 
 ## License
 
-This project is currently private and has no open-source license. Do not redistribute it unless a license is added.
+This repository does not currently include a license. Add one before treating
+the code as reusable open-source software.

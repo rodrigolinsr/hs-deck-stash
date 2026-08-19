@@ -6,7 +6,9 @@ use the local-development `compose.yaml` in Coolify.
 
 ## Before deploying
 
-1. Commit the project (including `compose.coolify.yaml`) to a private Git repository.
+1. Ensure the GitHub Container Registry packages for the backend and frontend
+   are public. The publishing workflow creates them after the first push to
+   `main`; change their visibility in GitHub's package settings if necessary.
 2. Point an A/AAAA DNS record such as `decks.example.com` to the Coolify server.
 3. Decide where MongoDB will live:
    - The included `mongo` service is the simplest option. It has a persistent
@@ -31,6 +33,11 @@ use the local-development `compose.yaml` in Coolify.
    Coolify generates and persists `SERVICE_USER_MONGO`,
    `SERVICE_PASSWORD_64_MONGO`, and `SERVICE_HEX_64_HSDECKSTASH` from the
    Compose file. Do not replace them with committed values.
+
+   To deploy a fixed version instead of `latest`, also set
+   `BACKEND_IMAGE=ghcr.io/rodrigolinsr/hs-deck-stash-backend:<tag>` and
+   `FRONTEND_IMAGE=ghcr.io/rodrigolinsr/hs-deck-stash-frontend:<tag>`, using a
+   release tag or the `sha-...` tag emitted by the workflow.
 
 4. Assign `https://decks.example.com` to the **frontend** service only. The
    frontend listens on container port `80`; do not add `:80` to the domain
