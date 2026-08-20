@@ -19,6 +19,7 @@ MIGRATIONS: list[Migration] = [
     ("003_backfill_user_display_names", "migrations.versions.003_backfill_user_display_names"),
     ("004_add_folders", "migrations.versions.004_add_folders"),
     ("005_unique_user_identity", "migrations.versions.005_unique_user_identity"),
+    ("006_public_deck_discovery", "migrations.versions.006_public_deck_discovery"),
 ]
 
 

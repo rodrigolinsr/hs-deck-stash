@@ -59,7 +59,7 @@ export default function ProfilePage() {
   });
 
   return <AppShell user={user}>
-    <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400"><ArrowLeft className="size-4" />All decks</Link>
+    <Link to="/library" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400"><ArrowLeft className="size-4" />My library</Link>
     <div className="mt-6 max-w-3xl">
       <p className="font-mono text-xs uppercase tracking-[0.24em] text-amber-600 dark:text-amber-400">Account settings</p>
       <h1 className="mt-2 font-heading text-4xl font-semibold">Your profile</h1>

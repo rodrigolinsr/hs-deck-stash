@@ -90,6 +90,7 @@ export default function DeckImportDialog({ open, onOpenChange, deck, folders = [
     },
     onSuccess: (saved) => {
       qc.invalidateQueries({ queryKey: ["decks"] });
+      qc.invalidateQueries({ queryKey: ["hsreplay-stats"] });
       qc.invalidateQueries({ queryKey: ["folders"] });
       qc.invalidateQueries({ queryKey: ["deck", saved.id] });
       toast.success(isEdit ? "Deck updated" : `Saved "${saved.name}"`);

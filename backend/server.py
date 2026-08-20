@@ -59,11 +59,12 @@ async def get_status_checks():
     return [StatusCheck(**status_check) for status_check in status_checks]
 
 from routers.auth import router as auth_router  # noqa: E402
-from routers.decks import router as decks_router  # noqa: E402
+from routers.decks import public_router, router as decks_router  # noqa: E402
 from routers.folders import router as folders_router  # noqa: E402
 
 api_router.include_router(auth_router, tags=["auth"])
 api_router.include_router(decks_router, tags=["decks"])
+api_router.include_router(public_router, tags=["public decks"])
 api_router.include_router(folders_router, tags=["folders"])
 
 # Include the router in the main app

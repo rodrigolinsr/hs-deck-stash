@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Copy, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, BarChart3, Copy, ExternalLink, Globe2, Info, Link2, Loader2, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import AppShell from "@/components/AppShell";
 import CardTileRow from "@/components/deck/CardTileRow";
@@ -10,11 +10,11 @@ import DeleteDeckDialog from "@/components/deck/DeleteDeckDialog";
 import ManaCurveChart from "@/components/deck/ManaCurveChart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { apiDelete, apiGet } from "@/lib/api";
+import { apiDelete, apiGet, apiPost } from "@/lib/api";
 import { copyText } from "@/lib/clipboard";
 import { classTheme } from "@/lib/hsclasses";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import type { DeckDetail, DeleteResult } from "@/lib/types";
+import type { DeckDetail, DeleteResult, HsReplayStatsResponse } from "@/lib/types";
 
 export default function DeckDetailPage() {
   const { deckId } = useParams<{ deckId: string }>();
@@ -34,6 +34,13 @@ export default function DeckDetailPage() {
     enabled: Boolean(user && deckId),
     retry: false,
   });
+  const hsReplayQuery = useQuery<HsReplayStatsResponse>({
+    queryKey: ["hsreplay-stats"],
+    queryFn: () => apiGet<HsReplayStatsResponse>("/decks/hsreplay-stats"),
+    enabled: Boolean(user && deckId),
+    retry: false,
+    staleTime: 10 * 60 * 1000,
+  });
 
   const remove = useMutation({
     mutationFn: () => apiDelete<DeleteResult>(`/decks/${deckId}`),
@@ -41,18 +48,33 @@ export default function DeckDetailPage() {
       qc.invalidateQueries({ queryKey: ["decks"] });
       setDeleteOpen(false);
       toast.success("Deck deleted");
-      navigate("/", { replace: true });
+      navigate("/library", { replace: true });
     },
     onError: () => toast.error("Could not delete that deck"),
   });
+  const visibility = useMutation({
+    mutationFn: (action: "publish" | "unpublish") => apiPost<DeckDetail>(`/decks/${deckId}/${action}`),
+    onSuccess: async (saved, action) => {
+      qc.setQueryData(["deck", saved.id], saved);
+      qc.invalidateQueries({ queryKey: ["decks"] });
+      if (action === "publish") {
+        const ok = await copyText(`${window.location.origin}/public/decks/${saved.id}`);
+        toast.success(ok ? "Deck published — public link copied" : "Deck published — copy the public link from this page");
+      } else {
+        toast.success("Deck is private again");
+      }
+    },
+    onError: () => toast.error("Could not update deck visibility"),
+  });
 
   const deck = deckQuery.data;
+  const hsReplayStat = hsReplayQuery.data?.stats.find((stat) => stat.deck_id === deckId);
   const theme = classTheme(deck?.hero_class ?? "NEUTRAL");
 
   return (
     <AppShell user={user}>
       <Link
-        to="/"
+        to="/library"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors duration-150 hover:text-amber-600 dark:hover:text-amber-400"
         data-testid="back-to-decks-link"
       >
@@ -123,16 +145,19 @@ export default function DeckDetailPage() {
               </div>
             </div>
 
+            {hsReplayQuery.isLoading ? <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground">Loading HSReplay statistics…</div> : hsReplayStat ? <a href={`https://hsreplay.net/decks/${hsReplayStat.hsreplay_deck_id}/#gameType=${hsReplayStat.game_type}`} target="_blank" rel="noreferrer" className="block rounded-2xl border border-sky-500/25 bg-sky-500/5 p-6 transition-colors hover:bg-sky-500/10" data-testid="deck-detail-hsreplay-stats"><div className="flex items-center justify-between"><div><p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-sky-700 dark:text-sky-300"><BarChart3 className="size-3.5" />HSReplay · Bronze–Gold · last 30 days</p><p className="mt-3 font-heading text-2xl font-semibold">{hsReplayStat.win_rate.toFixed(2)}% <span className="text-base font-medium text-muted-foreground">win rate</span></p><p className="mt-1 text-sm text-muted-foreground">{hsReplayStat.total_games.toLocaleString()} recorded games</p></div><ExternalLink className="size-4 text-muted-foreground" aria-label="View this deck on HSReplay" /></div></a> : null}
+
             <div className="rounded-2xl border border-border bg-card p-6">
               <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 Deck code
               </p>
-              <p
-                className="break-all rounded-lg bg-muted p-3 font-mono text-[11px] text-muted-foreground"
-                data-testid="deck-detail-code"
-              >
-                {deck.code}
-              </p>
+              <div className="rounded-lg border border-border bg-muted px-3 py-2.5" data-testid="deck-detail-code">
+                <code className="block break-all font-mono text-[11px] leading-5 text-muted-foreground">{deck.code}</code>
+              </div>
+              <div className="mt-3 grid grid-cols-[auto_1fr] gap-2 rounded-lg bg-muted/60 p-3 text-xs leading-5 text-muted-foreground">
+                <Info className="mt-0.5 size-3.5 text-amber-600 dark:text-amber-400" />
+                <p>Copy this code, then open Hearthstone’s deck creation screen and choose <span className="font-medium text-foreground">Paste a deck code</span> to import it.</p>
+              </div>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Button
                   size="sm"
@@ -157,6 +182,17 @@ export default function DeckDetailPage() {
                   <Pencil className="mr-1.5 size-3.5" />
                   Edit
                 </Button>
+                <Button size="sm" variant="outline" onClick={() => {
+                  if (deck.is_public) {
+                    copyText(`${window.location.origin}/public/decks/${deck.id}`).then((ok) => toast[ok ? "success" : "error"](ok ? "Public link copied" : "Could not copy the public link"));
+                  } else {
+                    visibility.mutate("publish");
+                  }
+                }} disabled={visibility.isPending} data-testid="deck-share-button">
+                  {visibility.isPending ? <Loader2 className="mr-1.5 size-3.5 animate-spin" /> : deck.is_public ? <Link2 className="mr-1.5 size-3.5" /> : <Globe2 className="mr-1.5 size-3.5" />}
+                  {deck.is_public ? "Copy public link" : "Share deck"}
+                </Button>
+                {deck.is_public ? <Button size="sm" variant="ghost" onClick={() => visibility.mutate("unpublish")} disabled={visibility.isPending} className="text-muted-foreground" data-testid="deck-unpublish-button">Make private</Button> : null}
                 <Button
                   size="sm"
                   variant="ghost"

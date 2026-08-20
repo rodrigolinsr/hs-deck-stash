@@ -43,7 +43,7 @@ export default function Login() {
   }
 
   useEffect(() => {
-    if (user) navigate("/", { replace: true });
+    if (user) navigate("/library", { replace: true });
   }, [user, navigate]);
 
   const submit = useMutation({
@@ -55,7 +55,7 @@ export default function Login() {
       setRegistrationError(null);
       beginSession();
       toast.success(`Welcome, ${result.display_name || result.email}`);
-      navigate("/", { replace: true });
+      navigate("/library", { replace: true });
     },
     onError: (err) => {
       let message = mode === "login" ? "Invalid email or password" : "Could not create account";

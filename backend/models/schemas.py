@@ -98,12 +98,57 @@ class DeckSummary(BaseModel):
     format: str
     card_count: int
     dust_cost: int
+    is_public: bool = False
+    published_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
 
 
 class DeckDetail(DeckSummary):
     cards: list[DeckCard] = []
+
+
+class PublicDeckDetail(DeckDetail):
+    author_name: str
+    author_username: str
+
+
+class PublicDeckSummary(DeckSummary):
+    author_name: str
+    author_username: str
+    community_copies: int = 1
+
+
+class PublicTag(BaseModel):
+    name: str
+    deck_count: int
+
+
+class PublicProfile(BaseModel):
+    username: str
+    display_name: str
+    decks: list[PublicDeckSummary] = []
+
+
+class PublicPlayerSummary(BaseModel):
+    username: str
+    display_name: str
+    deck_count: int
+    latest_published_at: datetime | None = None
+
+
+class HsReplayDeckStat(BaseModel):
+    deck_id: str
+    hsreplay_deck_id: str
+    win_rate: float
+    total_games: int
+    game_type: str
+
+
+class HsReplayStatsResponse(BaseModel):
+    available: bool
+    stats: list[HsReplayDeckStat] = []
+    as_of: str | None = None
 
 
 class DeckCreate(BaseModel):

@@ -11,10 +11,10 @@ import DeleteDeckDialog from "@/components/deck/DeleteDeckDialog";
 import FoldersPanel, { type FolderFilter } from "@/components/deck/FoldersPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { apiDelete, apiGet } from "@/lib/api";
+import { apiDelete, apiGet, apiPost } from "@/lib/api";
 import { copyText } from "@/lib/clipboard";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import type { DeckSummary, DeleteResult, Folder } from "@/lib/types";
+import type { DeckSummary, DeleteResult, Folder, HsReplayStatsResponse } from "@/lib/types";
 
 export default function Decks() {
   const navigate = useNavigate();
@@ -43,6 +43,13 @@ export default function Decks() {
     enabled: Boolean(user),
     retry: false,
   });
+  const hsReplayQuery = useQuery<HsReplayStatsResponse>({
+    queryKey: ["hsreplay-stats"],
+    queryFn: () => apiGet<HsReplayStatsResponse>("/decks/hsreplay-stats"),
+    enabled: Boolean(user && decksQuery.data),
+    retry: false,
+    staleTime: 10 * 60 * 1000,
+  });
 
   const remove = useMutation({
     mutationFn: (deck: DeckSummary) => apiDelete<DeleteResult>(`/decks/${deck.id}`),
@@ -53,8 +60,20 @@ export default function Decks() {
     },
     onError: () => toast.error("Could not delete that deck"),
   });
+  const publish = useMutation({
+    mutationFn: (deck: DeckSummary) => apiPost<DeckSummary>(`/decks/${deck.id}/publish`),
+    onSuccess: async (saved) => {
+      qc.invalidateQueries({ queryKey: ["decks"] });
+      qc.invalidateQueries({ queryKey: ["deck", saved.id] });
+      const ok = await copyText(`${window.location.origin}/public/decks/${saved.id}`);
+      toast.success(ok ? "Deck published — public link copied" : "Deck published");
+    },
+    onError: () => toast.error("Could not publish this deck"),
+  });
 
   const decks = decksQuery.data ?? [];
+  const hsReplayStats = useMemo(() => new Map((hsReplayQuery.data?.stats ?? []).map((stat) => [stat.deck_id, stat])), [hsReplayQuery.data]);
+  const folderNames = useMemo(() => new Map((foldersQuery.data ?? []).map((folder) => [folder.id, folder.name])), [foldersQuery.data]);
   const folderDecks = useMemo(() => decks.filter((deck) => (
     activeFolder === "all" || (activeFolder === "unfiled" ? !deck.folder_id : deck.folder_id === activeFolder)
   )), [decks, activeFolder]);
@@ -137,7 +156,18 @@ export default function Decks() {
               <DeckCard
                 key={deck.id}
                 deck={deck}
+                folderName={deck.folder_id ? folderNames.get(deck.folder_id) : undefined}
+                stat={hsReplayStats.get(deck.id)}
+                statsLoading={hsReplayQuery.isLoading}
+                sharePending={publish.isPending && publish.variables?.id === deck.id}
                 onCopy={handleCopy}
+                onShare={(deckToShare) => {
+                  if (deckToShare.is_public) {
+                    copyText(`${window.location.origin}/public/decks/${deckToShare.id}`).then((ok) => toast[ok ? "success" : "error"](ok ? "Public link copied" : "Could not copy the public link"));
+                  } else {
+                    publish.mutate(deckToShare);
+                  }
+                }}
                 onEdit={(d) => { setEditingDeck(d); setImportOpen(true); }}
                 onDelete={setDeletingDeck}
               />
