@@ -28,6 +28,10 @@ use the local-development `compose.yaml` in Coolify.
    ```dotenv
    DB_NAME=hsdeckstash
    CORS_ORIGINS=https://decks.example.com
+   RESEND_API_KEY=re_your_resend_api_key
+   EMAIL_FROM=HSDeckStash <hello@your-verified-domain.example>
+   APP_BASE_URL=https://decks.example.com
+   EMAIL_DELIVERY_ENABLED=true
    ```
 
    Coolify generates and persists `SERVICE_USER_MONGO`,
@@ -54,6 +58,8 @@ use the local-development `compose.yaml` in Coolify.
 4. Create a folder, assign a deck to it, and check that it remains after a
    redeploy.
 5. Confirm that the `mongo_data` volume is included in your backup process.
+6. In Resend, verify the sender domain and add the SPF/DKIM records it provides before
+   sending verification and password-reset emails.
 
 ## Ongoing operations
 

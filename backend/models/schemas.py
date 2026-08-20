@@ -12,19 +12,24 @@ def _now() -> datetime:
 
 
 class SignupRequest(BaseModel):
+    # Optional for compatibility with pre-username clients; the registration UI requires it.
+    display_name: str | None = Field(default=None, min_length=1, max_length=80)
     email: EmailStr
     password: str = Field(min_length=6, max_length=128)
+    remember_me: bool = True
 
 
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+    remember_me: bool = True
 
 
 class User(BaseModel):
     id: str
     email: str
     display_name: str = ""
+    email_verified: bool = False
 
 
 class ProfileUpdateRequest(BaseModel):
@@ -40,6 +45,18 @@ class ProfileUpdateRequest(BaseModel):
         if self.display_name is None and self.email is None and self.new_password is None:
             raise ValueError("Choose at least one profile detail to update")
         return self
+
+
+class TokenRequest(BaseModel):
+    token: str = Field(min_length=20, max_length=512)
+
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+
+
+class PasswordResetConfirmRequest(TokenRequest):
+    new_password: str = Field(min_length=6, max_length=128)
 
 
 class DeckCard(BaseModel):

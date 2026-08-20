@@ -11,6 +11,7 @@ from .conftest import api_url
 def test_profile_update_changes_name_email_and_password():
     original_email = f"profile-{uuid.uuid4().hex[:12]}@gmail.com"
     updated_email = f"updated-{uuid.uuid4().hex[:12]}@gmail.com"
+    username = f"Test Deck Keeper {uuid.uuid4().hex[:8]}"
     original_password = "original-password"
     new_password = "new-password-123"
 
@@ -24,7 +25,7 @@ def test_profile_update_changes_name_email_and_password():
         updated = client.patch(
             api_url("/auth/profile"),
             json={
-                "display_name": "Test Deck Keeper",
+                "display_name": username,
                 "email": updated_email,
                 "current_password": original_password,
                 "new_password": new_password,
@@ -34,11 +35,12 @@ def test_profile_update_changes_name_email_and_password():
         assert updated.json() == {
             "id": signup.json()["id"],
             "email": updated_email,
-            "display_name": "Test Deck Keeper",
+            "display_name": username,
+            "email_verified": False,
         }
         me = client.get(api_url("/auth/me"))
         assert me.status_code == 200, me.text
-        assert me.json()["display_name"] == "Test Deck Keeper"
+        assert me.json()["display_name"] == username
 
     with httpx.Client(timeout=30.0) as client:
         assert client.post(

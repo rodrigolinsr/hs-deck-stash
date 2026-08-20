@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut, MailWarning, Settings } from "lucide-react";
 import AppBrand from "@/components/AppBrand";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,7 @@ export default function AppShell({ user, children }: AppShellProps) {
           </div>
         </div>
       </header>
+      {user && !user.email_verified ? <div className="relative z-10 border-b border-amber-500/25 bg-amber-500/10"><div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2 text-sm text-amber-800 dark:text-amber-300 sm:px-6"><MailWarning className="size-4 shrink-0" /><span>Your email has not been verified.</span><Link to="/profile" className="ml-auto font-medium underline underline-offset-2 hover:text-amber-600 dark:hover:text-amber-100">Verify it</Link></div></div> : null}
       <main className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 sm:pt-8">{children}</main>
     </div>
   );

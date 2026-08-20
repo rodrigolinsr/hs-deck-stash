@@ -80,6 +80,7 @@ export default function FoldersPanel({ folders, decks, activeFolder, onChange }:
           </div>
         </>}
       </div>)}
+      <Button type="button" variant="outline" className="mt-3 w-full justify-start border-dashed text-muted-foreground hover:border-amber-500/50 hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-300" onClick={() => setNewFolderOpen(true)} data-testid="create-folder-bottom-button"><Plus className="mr-2 size-4" />Create folder</Button>
     </div>
 
     <Dialog open={newFolderOpen} onOpenChange={setNewFolderOpen}>

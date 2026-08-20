@@ -43,10 +43,12 @@ def is_https(request: Request) -> bool:
     return request.url.scheme == "https"
 
 
-def _cookie_header(value: str, max_age: int, request: Request) -> str:
+def _cookie_header(value: str, max_age: int | None, request: Request) -> str:
     # Over https the cookie must be SameSite=None so it rides fetches made from the
     # cross-site preview iframe; Partitioned keeps it working with 3rd-party cookie blocking.
-    parts = [f"{COOKIE_NAME}={value}", "Path=/", f"Max-Age={max_age}", "HttpOnly"]
+    parts = [f"{COOKIE_NAME}={value}", "Path=/", "HttpOnly"]
+    if max_age is not None:
+        parts.append(f"Max-Age={max_age}")
     if is_https(request):
         parts += ["SameSite=None", "Secure", "Partitioned"]
     else:
@@ -54,17 +56,18 @@ def _cookie_header(value: str, max_age: int, request: Request) -> str:
     return "; ".join(parts)
 
 
-def set_session_cookie(response: Response, user_id: str, request: Request) -> None:
+def set_session_cookie(response: Response, user: dict[str, Any], request: Request, remember_me: bool = True) -> None:
     token = jwt.encode(
         {
-            "sub": user_id,
+            "sub": user["id"],
+            "sv": user.get("session_version", 0),
             "exp": datetime.now(timezone.utc) + timedelta(days=SESSION_DAYS),
         },
         _SECRET,
         algorithm="HS256",
     )
     response.headers.append(
-        "set-cookie", _cookie_header(token, SESSION_DAYS * 86400, request)
+        "set-cookie", _cookie_header(token, SESSION_DAYS * 86400 if remember_me else None, request)
     )
 
 
@@ -83,4 +86,6 @@ async def current_user(ds_session: str | None = Cookie(default=None)) -> dict[st
     user = await db.users.find_one({"id": payload.get("sub")}, {"_id": 0})
     if not user:
         raise HTTPException(status_code=401, detail="Not signed in")
+    if payload.get("sv", 0) != user.get("session_version", 0):
+        raise HTTPException(status_code=401, detail="Session expired")
     return user

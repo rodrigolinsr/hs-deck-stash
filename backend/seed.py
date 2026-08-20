@@ -35,7 +35,14 @@ async def main() -> None:
 
     user = await db.users.find_one({"email": DEMO_EMAIL})
     if not user:
-        user = {"id": new_id(), "email": DEMO_EMAIL, "password": hash_password(DEMO_PASSWORD)}
+        user = {
+            "id": new_id(),
+            "email": DEMO_EMAIL,
+            "email_key": DEMO_EMAIL.casefold(),
+            "display_name": "demo",
+            "username_key": "demo",
+            "password": hash_password(DEMO_PASSWORD),
+        }
         await db.users.insert_one(dict(user))
         print(f"created demo user {DEMO_EMAIL} / {DEMO_PASSWORD}")
 

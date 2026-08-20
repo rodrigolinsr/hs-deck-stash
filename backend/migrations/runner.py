@@ -18,6 +18,7 @@ MIGRATIONS: list[Migration] = [
     ("002_normalize_cards_dbf_index", "migrations.versions.002_normalize_cards_dbf_index"),
     ("003_backfill_user_display_names", "migrations.versions.003_backfill_user_display_names"),
     ("004_add_folders", "migrations.versions.004_add_folders"),
+    ("005_unique_user_identity", "migrations.versions.005_unique_user_identity"),
 ]
 
 

@@ -29,6 +29,10 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:?Set this to https://your-domain.example in Coolify}
       SESSION_SECRET: ${SERVICE_HEX_64_HSDECKSTASH}
       APP_ENV: production
+      RESEND_API_KEY: ${RESEND_API_KEY:?Set this in Coolify}
+      EMAIL_FROM: ${EMAIL_FROM:?Use an address on your verified Resend domain}
+      APP_BASE_URL: ${APP_BASE_URL:?Set this to https://your-domain.example}
+      EMAIL_DELIVERY_ENABLED: "true"
     expose:
       - "8001"
     depends_on:

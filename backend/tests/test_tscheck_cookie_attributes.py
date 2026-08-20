@@ -40,3 +40,13 @@ def test_https_proxy_cookie_is_samesite_none_secure_partitioned():
         assert "Secure" in cookie_header
         assert "Partitioned" in cookie_header
         assert "HttpOnly" in cookie_header
+
+
+def test_unremembered_login_uses_a_browser_session_cookie():
+    with httpx.Client(timeout=30.0) as c:
+        r = c.post(
+            api_url("/auth/login"),
+            json={"email": DEMO_EMAIL, "password": DEMO_PASSWORD, "remember_me": False},
+        )
+        assert r.status_code == 200, r.text
+        assert "Max-Age=" not in _set_cookie_header(r)

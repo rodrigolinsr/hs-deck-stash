@@ -36,6 +36,7 @@ export default function ClassFilterBar({ counts, active, onChange }: ClassFilter
             className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${isActive ? "" : "border-border bg-card text-muted-foreground hover:bg-muted"}`}
             style={isActive ? { borderColor: theme.color, backgroundColor: theme.bg, color: theme.color } : undefined}
           >
+            {theme.icon ? <img src={theme.icon} alt="" className="mr-1.5 inline-block size-5 align-[-0.28rem]" /> : null}
             {theme.name}
             <span className="ml-1.5 font-mono text-xs opacity-70">{counts[key]}</span>
           </button>

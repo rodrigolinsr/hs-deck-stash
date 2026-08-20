@@ -4,6 +4,7 @@ import Login from "@/pages/Login";
 import Decks from "@/pages/Decks";
 import DeckDetailPage from "@/pages/DeckDetailPage";
 import ProfilePage from "@/pages/ProfilePage";
+import { ResetPasswordPage, VerifyEmailPage } from "@/pages/EmailActionPage";
 
 // One <Route> per page in src/pages; BrowserRouter already wraps this in main.tsx.
 export default function App() {
@@ -14,6 +15,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/decks/:deckId" element={<DeckDetailPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Routes>
       <Toaster richColors position="top-right" />
     </>

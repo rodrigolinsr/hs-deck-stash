@@ -78,20 +78,23 @@ export default function DeckDetailPage() {
               className="relative overflow-hidden rounded-2xl border p-6 text-white"
               style={{ borderColor: `${theme.color}44`, background: theme.bg }}
             >
+              {theme.image ? <img src={theme.image} alt="" className="absolute inset-0 size-full object-cover object-[center_30%] opacity-35" /> : null}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
               <div
-                className="absolute inset-x-0 top-0 h-[3px]"
+                className="absolute inset-x-0 top-0 z-10 h-[3px]"
                 style={{ background: `linear-gradient(90deg, ${theme.color}, transparent)` }}
               />
+              <div className="relative">
               <h1
                 className="font-heading text-3xl font-semibold leading-tight"
                 data-testid="deck-detail-name"
               >
                 {deck.name}
               </h1>
-              <p className="mt-2 text-sm" style={{ color: theme.color }}>
-                {deck.hero_class_name}
-                <span className="text-white/70"> · {deck.format}</span>
-              </p>
+              <div className="mt-3 flex items-center gap-3" style={{ color: theme.color }}>
+                {theme.icon ? <img src={theme.icon} alt={`${deck.hero_class_name} icon`} className="size-11" /> : null}
+                <p className="font-heading text-2xl font-semibold leading-none">{deck.hero_class_name}<span className="ml-2 text-lg font-medium text-white/85">· {deck.format}</span></p>
+              </div>
               <dl className="mt-5 grid grid-cols-2 gap-3 font-mono text-xs">
                 <div className="rounded-lg border border-white/10 bg-black/25 p-3">
                   <dt className="text-white/65">Cards</dt>
@@ -117,6 +120,7 @@ export default function DeckDetailPage() {
                   ))}
                 </div>
               )}
+              </div>
             </div>
 
             <div className="rounded-2xl border border-border bg-card p-6">

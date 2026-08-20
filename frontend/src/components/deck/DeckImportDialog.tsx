@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, Loader2, Sparkles } from "lucide-react";
+import { AlertTriangle, Loader2, Plus, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger } from "@/components/ui/select";
 import { ApiError, apiPatch, apiPost } from "@/lib/api";
 import { classTheme } from "@/lib/hsclasses";
 import { parseDeckClipboard, type ParsedDeckClipboard } from "@/lib/deckClipboard";
@@ -43,6 +43,8 @@ export default function DeckImportDialog({ open, onOpenChange, deck, folders = [
   const [notes, setNotes] = useState("");
   const [tags, setTags] = useState("");
   const [folderId, setFolderId] = useState("");
+  const [newFolderName, setNewFolderName] = useState("");
+  const [creatingFolder, setCreatingFolder] = useState(false);
   const [clipboardDeck, setClipboardDeck] = useState<ParsedDeckClipboard | null>(null);
 
   useEffect(() => {
@@ -52,6 +54,8 @@ export default function DeckImportDialog({ open, onOpenChange, deck, folders = [
     setNotes(deck?.notes ?? "");
     setTags((deck?.tags ?? []).join(", "));
     setFolderId(deck?.folder_id ?? initialFolderId ?? "");
+    setNewFolderName("");
+    setCreatingFolder(false);
     setClipboardDeck(null);
   }, [open, deck]);
 
@@ -66,6 +70,11 @@ export default function DeckImportDialog({ open, onOpenChange, deck, folders = [
 
   const save = useMutation({
     mutationFn: async () => {
+      let resolvedFolderId = folderId || null;
+      if (creatingFolder && newFolderName.trim()) {
+        const folder = await apiPost<Folder>("/folders", { name: newFolderName.trim() });
+        resolvedFolderId = folder.id;
+      }
       const payload = {
         name: name.trim(),
         code: trimmed,
@@ -74,13 +83,14 @@ export default function DeckImportDialog({ open, onOpenChange, deck, folders = [
           .split(",")
           .map((t) => t.trim())
           .filter(Boolean),
-        folder_id: folderId || null,
+        folder_id: resolvedFolderId,
       };
       if (deck) return apiPatch<DeckDetail>(`/decks/${deck.id}`, payload);
       return apiPost<DeckDetail>("/decks", payload);
     },
     onSuccess: (saved) => {
       qc.invalidateQueries({ queryKey: ["decks"] });
+      qc.invalidateQueries({ queryKey: ["folders"] });
       qc.invalidateQueries({ queryKey: ["deck", saved.id] });
       toast.success(isEdit ? "Deck updated" : `Saved "${saved.name}"`);
       onOpenChange(false);
@@ -94,7 +104,7 @@ export default function DeckImportDialog({ open, onOpenChange, deck, folders = [
   const data = preview.data;
   const theme = classTheme(data?.hero_class ?? "NEUTRAL");
   const duplicate = data?.duplicate_of_id && data.duplicate_of_id !== deck?.id;
-  const selectedFolderName = folders.find((folder) => folder.id === folderId)?.name ?? "Unfiled";
+  const selectedFolderName = creatingFolder ? "New folder" : folders.find((folder) => folder.id === folderId)?.name ?? "Unfiled";
 
   function acceptClipboardDeck() {
     if (!clipboardDeck) return;
@@ -203,14 +213,28 @@ export default function DeckImportDialog({ open, onOpenChange, deck, folders = [
 
           <div className="space-y-2">
             <Label htmlFor="deck-folder">Folder</Label>
-            <Select value={folderId} onValueChange={setFolderId}>
+            <Select value={creatingFolder ? "__create_folder__" : folderId} onValueChange={(value) => {
+              if (value === "__create_folder__") { setCreatingFolder(true); return; }
+              setCreatingFolder(false); setFolderId(value);
+            }}>
               <SelectTrigger id="deck-folder" className="w-full" data-testid="deck-folder-select">{selectedFolderName}</SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Unfiled</SelectItem>
                 {folders.map((folder) => <SelectItem key={folder.id} value={folder.id}>{folder.name}</SelectItem>)}
+                <SelectSeparator />
+                <SelectItem value="__create_folder__"><Plus className="size-4 text-amber-600 dark:text-amber-400" />Create a new folder…</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">Folders keep related decks together; tags can still describe the deck.</p>
+            {creatingFolder ? <Input
+              id="new-deck-folder"
+              value={newFolderName}
+              onChange={(event) => setNewFolderName(event.target.value)}
+              placeholder="New folder name"
+              maxLength={60}
+              autoFocus
+              data-testid="new-deck-folder-input"
+            /> : null}
+            <p className="text-xs text-muted-foreground">Choose an existing folder or create one without leaving this form.</p>
           </div>
 
           <div className="space-y-2">
@@ -242,7 +266,7 @@ export default function DeckImportDialog({ open, onOpenChange, deck, folders = [
               }
               save.mutate();
             }}
-            disabled={save.isPending || trimmed.length < 8}
+            disabled={save.isPending || trimmed.length < 8 || (creatingFolder && !newFolderName.trim())}
             className="bg-amber-600 text-black transition-all duration-150 hover:bg-amber-500 active:scale-[0.98]"
             data-testid="deck-dialog-save-button"
           >
